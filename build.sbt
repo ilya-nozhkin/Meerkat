@@ -38,5 +38,15 @@ lazy val neo4j = (project in file("neo4j"))
     )
   )
 
+lazy val jgrapht = (project in file("jgrapht"))
+  .settings(commonSettings)
+  .dependsOn(core % "compile->compile;test->test")
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.jgrapht" % "jgrapht-core" % "1.1.0",
+      "org.scalatest" %% "scalatest"   % "3.0.1" % "test"
+    )
+  )
+
 lazy val root = (project in file("."))
-  .aggregate(core, neo4j)
+  .aggregate(core, neo4j, jgrapht)
