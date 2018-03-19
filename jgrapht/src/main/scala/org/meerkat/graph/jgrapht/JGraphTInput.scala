@@ -1,26 +1,32 @@
 package org.meerkat.graph.jgrapht;
 
-import org.meerkat.util.Input
+import org.meerkat.input.Input
 import scala.collection.JavaConverters._
 import org.jgrapht.graph.AbstractBaseGraph
 
+class JGraphTInput[V, E](graph: AbstractBaseGraph[V, E]) extends Input[String] {
+  private val vertexToId =
+    graph.vertexSet().asScala.zipWithIndex.toMap
 
-class JGraphTInput(graph: AbstractBaseGraph[Int, String]) extends Input {
+  private val idToVertex =
+    vertexToId.map(_.swap)
+
   override def length = graph.vertexSet().size()
 
-  override def filterEdges(nodeId: Int, label: String): Seq[Int] =
+  override type Edge = (String, Int)
+
+  override def filterEdges(nodeId: Int, label: String): Seq[Edge] =
     outEdges(nodeId)
-      .filter(edge => edge._1 == label)
-      .map(edge => edge._2)
+      .filter {case (data, _) => data.equals(label)}
 
   override def outEdges(nodeId: Int): Seq[Edge] =
-    graph.outgoingEdgesOf(nodeId)
+    graph.outgoingEdgesOf(idToVertex(nodeId))
       .asScala
-      .map(edge => (edge, graph.getEdgeTarget(edge)))
+      .map(edge => (edge.toString, vertexToId(graph.getEdgeTarget(edge))))
       .toSeq
 
-  override def checkNode(id: Int, label: String): Boolean = true
+  override def checkNode(nodeId: Int, label: String): Boolean =
+    idToVertex(nodeId).toString.equals(label.toString)
 
-  override def substring(start: Int, end: Int) =
-    throw new RuntimeException("Can not be done for graphs")
+  override def epsilonLabel = "epsilon"
 }
