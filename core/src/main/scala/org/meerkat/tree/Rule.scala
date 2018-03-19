@@ -56,15 +56,17 @@ object PartialRule {
   def apply(head: NonterminalSymbol, body: Symbol): PartialRule = PartialRule(head, body, 0)
 }
 
+/// TODO: add tupe signature
 trait Symbol {
-  def name: String
+  def name: Any
   //mycode
   override def toString = s"${name}"
   //mycode
 }
 
-case class TerminalSymbol(name: String) extends Symbol
-case class VertexSymbol(name: String) extends Symbol
+// TODO: add type signature
+case class TerminalSymbol(name: Any) extends Symbol
+case class VertexSymbol(name: Any) extends Symbol
 
 trait NonterminalSymbol extends Symbol {
   def name: String

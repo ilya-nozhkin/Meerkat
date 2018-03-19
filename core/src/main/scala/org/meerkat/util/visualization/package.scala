@@ -30,10 +30,13 @@ package org.meerkat.util
 import org.meerkat.util.visualization.Shape._
 import org.meerkat.util.visualization.Style._
 import org.meerkat.util.visualization.Color._
+
 import scala.sys.process._
 import java.io.File
 import java.io.BufferedWriter
 import java.io.FileWriter
+
+import org.meerkat.input.Input
 import org.meerkat.tree.Tree
 import org.meerkat.sppf.NonPackedNode
 import org.meerkat.tree.TreeVisitor
@@ -44,11 +47,11 @@ import org.meerkat.sppf.Memoization
 
 package object visualization {
 
-  implicit val f: (SPPFNode, Input) => String = toDot
-  implicit val g: (Tree, Input) => String     = toDot
+  implicit val f: (SPPFNode, Input[_]) => String = toDot
+  implicit val g: (Tree, Input[_]) => String     = toDot
 
-  def visualize[T](t: T, input: Input, name: String = "graph", path: String = ".")(
-    implicit f: (T, Input) => String
+  def visualize[T](t: T, input: Input[_], name: String = "graph", path: String = ".")(
+    implicit f: (T, Input[_]) => String
   ): Unit = visualize(f(t, input), name, path)
 
   private def visualize(s: String, name: String, path: String): Unit = {
@@ -84,13 +87,13 @@ package object visualization {
   def escape(s: Any): String =
     s.toString.replaceAll("\"", "\\\\\"").replaceAll("\t", "t").replaceAll("\n", "n").replaceAll("\r", "r")
 
-  def toDot(t: Tree, input: Input): String = {
+  def toDot(t: Tree, input:Input[_]): String = {
     val v = new TreeToDot
     v.visit(t)(input)
     v.get
   }
 
-  def toDot(t: SPPFNode, input: Input): String = {
+  def toDot(t: SPPFNode, input: Input[_]): String = {
     val v = new SPPFToDot with Memoization
     v.visit(t)
     v.get

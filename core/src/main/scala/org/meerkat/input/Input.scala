@@ -25,36 +25,34 @@
  *
  */
 
-package org.meerkat.parsers.examples
+package org.meerkat.input
 
-import org.meerkat.Syntax._
-import org.meerkat.parsers._
-import Parsers._
-import OperatorParsers._
-import org.scalatest.FunSuite
+import scala.language.implicitConversions
 
-/**
- * Associativity groups + deep case (unary/binary operators)
- */
-class Example8 extends FunSuite {
+trait Input[-L] {
+  type Edge >: (L, Int)
 
-  val E: OperatorNonterminal = syn(
-    "(" ~ E ~ ")"
-      |> right(
-        E ~ "*" ~ E
-          | E ~ "/" ~ E
-      )
-      |> left(
-        E ~ "+" ~ E
-          | E ~ "-" ~ E
-      )
-      |> "-" ~ E
-      | "a"
-  )
+  def length: Int
 
-  test("test") {
-    val result = parse(E, "a+a-a*a/a")
-    assert(result.isSuccess)
-  }
+  def start: Int = 0
 
+  def filterEdges(nodeId: Int, label: L): collection.Seq[Edge]
+
+  def outEdges(nodeId: Int): collection.Seq[Edge]
+
+  def checkNode(nodeId: Int, label: L): Boolean
+
+  /// TODO: get rid of it
+  def substring(start: Int, end: Int): String =
+    throw new RuntimeException("Not supported")
+  def epsilonLabel: Any
+  def charAt(i: Int): Char =
+    throw new RuntimeException("Not supported")
+}
+
+
+object Input {
+//  def apply(s: String) = new LinearInput(s)
+//
+//  implicit def toInput(s: String): LinearInput = Input(s)
 }

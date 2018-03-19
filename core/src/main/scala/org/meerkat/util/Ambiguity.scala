@@ -57,7 +57,7 @@ object Ambiguity {
           if (n.isAmbiguous) ambiguousNodes.add(n)
           for (t <- n.children) countAmbiguities(t, ambiguousNodes, duplicateSet)
 
-        case n: TerminalNode =>
+        case n: TerminalNode[_] =>
         case n: PackedNode =>
           if (n.leftChild != null) countAmbiguities(n.leftChild, ambiguousNodes, duplicateSet)
           countAmbiguities(n.rightChild, ambiguousNodes, duplicateSet)

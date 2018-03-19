@@ -460,7 +460,7 @@ In contrast, the project that enables it encompasses the administrative aspects 
   <rdf:Description rdf:about="http://purl.org/cerif/frapo/hasJobTitle">
     <rdfs:comment xml:lang="en">A data property permitting specification of the job title held by a person, such as might appear next to the name in a directory or on a conference name badge.  For example, the person's specific Job Title might be 'Linacre Professor of Zoology' or 'Regius Professor of Moral Philosophy'. 
 
-This job title properly refers to the **role** held by that person (e.g. 'Head of Department'), which can be separately defined using SCoRO, the Scholarly Contributions and Roles Ontology (http://purl.org/spar/scoro/). [see scoro:withJobTitle].
+This job title properly refers to the **role** held by that person (e.g. 'Head[E, N] of Department'), which can be separately defined using SCoRO, the Scholarly Contributions and Roles Ontology (http://purl.org/spar/scoro/). [see scoro:withJobTitle].
 
 </rdfs:comment>
     <rdfs:label xml:lang="en">has job title</rdfs:label>
@@ -955,7 +955,7 @@ This job title properly refers to the **role** held by that person (e.g. 'Head o
     <rdfs:comment xml:lang="en">A database containing administrative information about the research undertaken in an institution, and the publications and other outputs from such research.</rdfs:comment>
     <rdfs:label xml:lang="en">research information system</rdfs:label>
   </rdf:Description>
-  <rdf:Description rdf:about="http://purl.org/cerif/frapo/hasHeadcount">
+  <rdf:Description rdf:about="http://purl.org/cerif/frapo/hasHead[E, N]count">
     <rdfs:label xml:lang="en">has headcount</rdfs:label>
     <rdfs:subPropertyOf rdf:resource="http://purl.org/cerif/frapo/hasOrganizationalInformation"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>

@@ -12,7 +12,7 @@ class Neo4jGraphTest1 extends Neo4jGraphStatisticsTest("1") {
     n1.createRelationshipTo(n2, () => "a")
   }
 
-  override def createParser: Nonterminal & NoValue = syn("a")
+  override def createParser: Nonterminal[String] & NoValue = syn("a")
 
   override def expectedSppfStatistics: SPPFStatistics =
     SPPFStatistics(1, 0, 1, 1, 0)

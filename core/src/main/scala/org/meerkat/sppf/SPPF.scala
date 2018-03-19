@@ -96,11 +96,12 @@ case class IntermediateNode(name: Any, leftExtent: Int, rightExtent: Int) extend
 
 trait AbstractTerminalNode
 
-case class TerminalNode(s: String, leftExtent: Int, rightExtent: Int) extends NonPackedNode with AbstractTerminalNode {
+case class TerminalNode[+E](s: E, leftExtent: Int, rightExtent: Int) extends NonPackedNode with AbstractTerminalNode {
 
-  def this(c: Char, inputIndex: Int) = this(String.valueOf(c), inputIndex, inputIndex + 1)
+//  def this(c: Char, inputIndex: Int) = this(String.valueOf(c), inputIndex, inputIndex + 1)
 
-  override val name: String = s
+  // TODO: ???
+  override val name: Any = s
 }
 
 

@@ -1,5 +1,6 @@
 package org.meerkat
 
+import org.meerkat.input.{GraphxInput, Input}
 import org.meerkat.parsers.{AbstractCPSParsers, Trampoline}
 import org.meerkat.sppf.{DefaultSPPFLookup, NonterminalNode}
 import org.meerkat.util._
@@ -9,10 +10,10 @@ import scalax.collection.Graph
 import scalax.collection.edge.Implicits._
 
 package object graph {
-  def parseGraphFromAllPositions(parser: AbstractCPSParsers.AbstractSymbol[_, _],
-                                 graph: Input,
+  def parseGraphFromAllPositions[L](parser: AbstractCPSParsers.AbstractSymbol[L,_, _],
+                                 graph: Input[L],
                                  nontermsOpt: Option[List[String]] = None): collection.Seq[NonterminalNode] = {
-    val sppfLookup = new DefaultSPPFLookup(graph)
+    val sppfLookup = new DefaultSPPFLookup[L](graph)
     val nodesCount = graph.length
     parser.reset()
     for (i <- 0 until nodesCount) {
@@ -29,7 +30,7 @@ package object graph {
       case (f, l, t) =>
         (f ~+#> t)(l)
     }
-    new GraphxInput(Graph(scalaxEdges: _*))
+    GraphxInput(Graph(scalaxEdges: _*))
   }
 }
 

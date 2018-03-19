@@ -8,13 +8,14 @@ import org.meerkat.Syntax._
 import org.meerkat.graph._
 import org.meerkat.parsers.Parsers._
 import org.meerkat.parsers._
-import org.meerkat.util.Input
 import org.meerkat.graph._
+import org.meerkat.input.Input
 import org.meerkat.tree.NonterminalSymbol
 
 import scala.collection.JavaConverters._
 
 trait RdfMixin {
+  type L = String
   val rdfs =
     List(
       ("atom-primitive.owl", 15454, 122),
@@ -31,8 +32,8 @@ trait RdfMixin {
     )
 
   private val grammar = new AnyRef {
-    private def sameGen(bs: List[(Symbol[_], Symbol[_])]): Symbol[_] =
-      bs.map { case (ls, rs) => ls ~ syn(sameGen(bs).?) ~ rs } match {
+    private def sameGen(bs: List[(Symbol[L, _], Symbol[L, _])]): Symbol[L, _] =
+      bs.map { case (ls, rs) => ls ~ syn(sameGen(bs) | epsilon) ~ rs } match {
         case x :: Nil     => syn(epsilon | x)
         case x :: y :: xs => syn(xs.foldLeft(x | y)(_ | _))
       }
@@ -44,13 +45,13 @@ trait RdfMixin {
       syn(sameGen(List(("subclassof-1", "subclassof"))) ~ "subclassof")
   }
 
-  def getResults(edgesToGraph: (List[(Int, String, Int)], Int) => Input): List[(String, Int, Int)] =
+  def getResults(edgesToGraph: (List[(Int, String, Int)], Int) => Input[L]): List[(String, Int, Int)] =
     rdfs.map {
       case (file, _, _) =>
         val ((res1, _), (res2, _)) = queryRdf(file, edgesToGraph)
         (file, res1, res2)
     }
-  def benchmark(times: Int, edgesToGraph: (List[(Int, String, Int)], Int) => Input): List[(String, Long, Long)] =
+  def benchmark(times: Int, edgesToGraph: (List[(Int, String, Int)], Int) => Input[L]): List[(String, Long, Long)] =
     rdfs.map {
       case (file, _, _) =>
         val (time1, time2) =
@@ -60,12 +61,12 @@ trait RdfMixin {
         (file, time1 / times, time2 / times)
     }
 
-  def queryRdf(file: String, edgesToGraph: (List[(Int, String, Int)], Int) => Input): ((Int, Long), (Int, Long)) = {
+  def queryRdf(file: String, edgesToGraph: (List[(Int, String, Int)], Int) => Input[L]): ((Int, Long), (Int, Long)) = {
     val triples             = getTriples(file)
     val (edges, nodesCount) = triplesToEdges(triples)
     val graph               = edgesToGraph(edges, nodesCount)
 
-    def parseAndGetRunningTime(grammar: AbstractCPSParsers.AbstractSymbol[_, _]) = {
+    def parseAndGetRunningTime(grammar: AbstractCPSParsers.AbstractSymbol[L,_, _]) = {
       val start = System.currentTimeMillis
       val res   = parseGraphFromAllPositions(grammar, graph).length
       val end   = System.currentTimeMillis

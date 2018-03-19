@@ -1,9 +1,9 @@
 package org.meerkat.graph
 
 import org.meerkat.Syntax._
+import org.meerkat.input.GraphxInput
 import org.meerkat.parsers.Parsers._
 import org.meerkat.parsers._
-import org.meerkat.util.GraphxInput
 import org.scalatest.FunSuite
 import org.scalatest.Matchers._
 import org.scalatest.OptionValues._
@@ -13,11 +13,11 @@ import scalax.collection.edge.Implicits._
 
 class GraphTest5 extends FunSuite {
   val A = syn("a" ~ "b")
-  val B: Nonterminal = syn(
+  val B: Nonterminal[String] =syn(
     "d" |
       B ~ "d"
   )
-  val E: Nonterminal = syn(
+  val E: Nonterminal[String] =syn(
     A ~ E ~ B |
       "d"
   )

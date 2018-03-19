@@ -31,7 +31,6 @@ import org.meerkat.sppf.NonPackedNode
 import org.meerkat.parsers.&
 import org.meerkat.parsers.Parsers.Symbol
 import org.meerkat.parsers.Parsers
-import org.meerkat.parsers.DDParsers
 import org.meerkat.parsers.Parsers.AlternationBuilder
 import org.meerkat.parsers.Parsers.SequenceBuilder
 import org.meerkat.parsers.OperatorParsers.OperatorAlternationBuilder
@@ -39,8 +38,6 @@ import org.meerkat.parsers.OperatorParsers.OperatorSequenceBuilderWithAction
 import org.meerkat.parsers.OperatorParsers.AbstractOperatorNonterminal
 import org.meerkat.parsers.OperatorParsers.OperatorNonterminalWithAction
 import org.meerkat.parsers.Parsers.Nonterminal
-import org.meerkat.parsers.DDParsers.DataNonterminal
-import org.meerkat.parsers.DDParsers.DataNonterminalWithAction
 import org.meerkat.parsers.OperatorParsers.OperatorSequenceBuilder
 import org.meerkat.parsers.OperatorParsers.OperatorNonterminal
 import org.bitbucket.inkytonik.dsinfo.DSInfo.makeCallWithName
@@ -54,61 +51,51 @@ object Syntax {
   import scala.language.experimental.macros
   import scala.reflect.macros.blackbox.Context
 
-  def syn[T](p: Parsers.AlternationBuilder[T]): Nonterminal & T = macro makeNonterminalAltWithName[T]
-  def syn[T](p: Parsers.SequenceBuilder[T]): Nonterminal & T = macro makeNonterminalSeqWithName[T]
-  def syn[T](p: AbstractSymbol[NonPackedNode, T]): Nonterminal & T = macro makeNonterminalSymWithName[T]
-  def syn[T](p: Symbol[T]): Nonterminal & T = macro makeNonterminalSymWithName[T]
+  def syn[L, T](p: Parsers.AlternationBuilder[L, T]): Nonterminal[L] & T= macro makeNonterminalAltWithName[L, T]
+  def syn[L, T](p: Parsers.SequenceBuilder[L, T]): Nonterminal[L] & T= macro makeNonterminalSeqWithName[L, T]
+//  def syn[L, T](p: AbstractSymbol[L, NonPackedNode, T]): Nonterminal[L] & T= macro makeNonterminalSymWithName[L, T]
+  def syn[L, T](p: Symbol[L, T]): Nonterminal[L] & T= macro makeNonterminalSymWithName[L, T]
 
-  def not[T](p: AbstractSymbol[NonPackedNode, T]): Nonterminal & T = macro makeNegativeSymWithName[T]
+  def not[L, T](p: AbstractSymbol[L, NonPackedNode, T]): Nonterminal[L] & T= macro makeNegativeSymWithName[L, T]
 
-  def syn[T, V](p: DDParsers.AlternationBuilder[T, V]): DataNonterminalWithAction[T, V] =
-    macro makeDataNonterminalAltWithName[T, V]
-  def syn[T, V](p: DDParsers.SequenceBuilder[T, V]): DataNonterminalWithAction[T, V] =
-    macro makeDataNonterminalSeqWithName[T, V]
-  def syn[T, V](p: AbstractSymbol[(NonPackedNode, T), V]): DataNonterminalWithAction[T, V] =
-    macro makeDataNonterminalSymWithName[T, V]
-
-  def makeNonterminalAltWithName[T](c: Context)(p: c.Expr[AlternationBuilder[T]]): c.Expr[Nonterminal & T] =
+  def makeNonterminalAltWithName[L, T](c: Context)(p: c.Expr[AlternationBuilder[L, T]]): c.Expr[Nonterminal[L] & T] =
     makeCallWithName(c, "Parsers.ntAlt")
-  def makeNonterminalSeqWithName[T](c: Context)(p: c.Expr[SequenceBuilder[T]]): c.Expr[Nonterminal & T] =
+  def makeNonterminalSeqWithName[L, T](c: Context)(p: c.Expr[SequenceBuilder[L, T]]): c.Expr[Nonterminal[L] & T] =
     makeCallWithName(c, "Parsers.ntSeq")
-  def makeNonterminalSymWithName[T](c: Context)(p: c.Expr[AbstractSymbol[NonPackedNode, T]]): c.Expr[Nonterminal & T] =
+  def makeNonterminalSymWithName[L, T](
+    c: Context
+  )(p: c.Expr[AbstractSymbol[L, NonPackedNode, T]]): c.Expr[Nonterminal[L] & T] =
     makeCallWithName(c, "Parsers.ntSym")
 
-  def makeNegativeSymWithName[T](c: Context)(p: c.Expr[AbstractSymbol[NonPackedNode, T]]): c.Expr[Nonterminal & T] =
+  def makeNegativeSymWithName[L, T](
+    c: Context
+  )(p: c.Expr[AbstractSymbol[L, NonPackedNode, T]]): c.Expr[Nonterminal[L] & T] =
     makeCallWithName(c, "Parsers.notSym")
 
-  def makeDataNonterminalAltWithName[T, V](c: Context)(
-    p: c.Expr[DDParsers.AlternationBuilder[T, V]]
-  ): c.Expr[DataNonterminalWithAction[T, V]] = makeCallWithName(c, "DDParsers.ntAlt")
-  def makeDataNonterminalSeqWithName[T, V](c: Context)(
-    p: c.Expr[DDParsers.SequenceBuilder[T, V]]
-  ): c.Expr[DataNonterminalWithAction[T, V]] = makeCallWithName(c, "DDParsers.ntSeq")
-  def makeDataNonterminalSymWithName[T, V](c: Context)(
-    p: c.Expr[AbstractSymbol[(NonPackedNode, T), V]]
-  ): c.Expr[DataNonterminalWithAction[T, V]] = makeCallWithName(c, "DDParsers.ntSym")
+  def syn[L, T](p: OperatorAlternationBuilder[L, T]): OperatorNonterminal[L] & T=
+    macro makeOperatorNonterminalAltWithName[L, T]
+  def syn[L, T](p: OperatorSequenceBuilder[L, T]): OperatorNonterminal[L] & T=
+    macro makeOperatorNonterminalSeqWithName[L, T]
+  def syn[L, T](p: AbstractOperatorNonterminal[L, T]): OperatorNonterminal[L] & T=
+    macro makeOperatorNonterminalSymWithName[L, T]
+  def syn[L, T](p: OperatorSequenceBuilderWithAction[L, T]): OperatorNonterminal[L] & T=
+    macro makeOperatorNonterminalSeqWithActionWithName[L, T]
+  def syn[L, T](p: OperatorNonterminalWithAction[L,T]): OperatorNonterminal[L] & T=
+    macro makeOperatorNonterminalSymWithActionWithName[L, T]
 
-  def syn[T](p: OperatorAlternationBuilder[T]): OperatorNonterminal & T = macro makeOperatorNonterminalAltWithName[T]
-  def syn[T](p: OperatorSequenceBuilder[T]): OperatorNonterminal & T = macro makeOperatorNonterminalSeqWithName[T]
-  def syn[T](p: AbstractOperatorNonterminal[T]): OperatorNonterminal & T = macro makeOperatorNonterminalSymWithName[T]
-  def syn[T](p: OperatorSequenceBuilderWithAction[T]): OperatorNonterminal & T =
-    macro makeOperatorNonterminalSeqWithActionWithName[T]
-  def syn[T](p: OperatorNonterminalWithAction[T]): OperatorNonterminal & T =
-    macro makeOperatorNonterminalSymWithActionWithName[T]
-
-  def makeOperatorNonterminalAltWithName[T](c: Context)(
-    p: c.Expr[OperatorAlternationBuilder[T]]
-  ): c.Expr[OperatorNonterminal & T] = makeCallWithName(c, "OperatorParsers.ntAlt")
-  def makeOperatorNonterminalSeqWithName[T](c: Context)(
-    p: c.Expr[OperatorSequenceBuilder[T]]
-  ): c.Expr[OperatorNonterminal & T] = makeCallWithName(c, "OperatorParsers.ntSeq")
-  def makeOperatorNonterminalSymWithName[T](c: Context)(
-    p: c.Expr[AbstractOperatorNonterminal[T]]
-  ): c.Expr[OperatorNonterminal & T] = makeCallWithName(c, "OperatorParsers.ntSym")
-  def makeOperatorNonterminalSeqWithActionWithName[T](c: Context)(
-    p: c.Expr[OperatorSequenceBuilderWithAction[T]]
-  ): c.Expr[OperatorNonterminal & T] = makeCallWithName(c, "OperatorParsers.ntSeqWithAction")
-  def makeOperatorNonterminalSymWithActionWithName[T](c: Context)(
-    p: c.Expr[OperatorNonterminalWithAction[T]]
-  ): c.Expr[OperatorNonterminal & T] = makeCallWithName(c, "OperatorParsers.ntSymWithAction")
+  def makeOperatorNonterminalAltWithName[L, T](c: Context)(
+    p: c.Expr[OperatorAlternationBuilder[L, T]]
+  ): c.Expr[OperatorNonterminal[L] & T] = makeCallWithName(c, "OperatorParsers.ntAlt")
+  def makeOperatorNonterminalSeqWithName[L, T](c: Context)(
+    p: c.Expr[OperatorSequenceBuilder[L, T]]
+  ): c.Expr[OperatorNonterminal[L] & T] = makeCallWithName(c, "OperatorParsers.ntSeq")
+  def makeOperatorNonterminalSymWithName[L, T](c: Context)(
+    p: c.Expr[AbstractOperatorNonterminal[L, T]]
+  ): c.Expr[OperatorNonterminal[L] & T] = makeCallWithName(c, "OperatorParsers.ntSym")
+  def makeOperatorNonterminalSeqWithActionWithName[L, T](c: Context)(
+    p: c.Expr[OperatorSequenceBuilderWithAction[L, T]]
+  ): c.Expr[OperatorNonterminal[L] & T] = makeCallWithName(c, "OperatorParsers.ntSeqWithAction")
+  def makeOperatorNonterminalSymWithActionWithName[L, T](c: Context)(
+    p: c.Expr[OperatorNonterminalWithAction[L,T]]
+  ): c.Expr[OperatorNonterminal[L] & T] = makeCallWithName(c, "OperatorParsers.ntSymWithAction")
 }
