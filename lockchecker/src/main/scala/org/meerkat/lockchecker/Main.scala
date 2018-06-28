@@ -118,6 +118,7 @@ object Main extends App {
     print("Parsing from: ")
     startNodes.foreach(n => print(n + " "))
     println()
+    println(startNodes.size)
 
     val roots = parseGraphFromSpecifiedPositions(grammar, graphInput, startNodes)
 
