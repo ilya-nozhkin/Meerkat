@@ -32,7 +32,7 @@ object Main extends App {
 
     val graph = Graph[Int, LkDiEdge](edges.toList: _*)
 
-    (starts.toList, GraphxInput[String](graph), grammar)
+    (starts.filter(node => graph.find(node).isDefined).toList, GraphxInput[String](graph), grammar)
   }
 
   type StringNonterminal = Nonterminal[String, Nothing]
@@ -109,20 +109,25 @@ object Main extends App {
 
     if (checkTime) {
       tend = System.currentTimeMillis()
-      println("loading " + (tend - tstart))
+      println("loaded " + (tend - tstart))
     }
 
     if (checkTime)
       tstart = System.currentTimeMillis()
 
+    print("Parsing from: ")
+    startNodes.foreach(n => print(n + " "))
+    println()
+
     val roots = parseGraphFromSpecifiedPositions(grammar, graphInput, startNodes)
+
     print("Start nodes: ")
     roots.foreach(root => print(root.toString + " "))
     println()
 
     if (checkTime) {
       tend = System.currentTimeMillis()
-      println("parsing " + (tend - tstart))
+      println("parsed " + (tend - tstart))
     }
 
     if (checkTime)
@@ -133,7 +138,7 @@ object Main extends App {
 
       if (checkTime) {
         tend = System.currentTimeMillis()
-        println("Assertions extraction " + (tend - tstart))
+        println("Assertions extracted " + (tend - tstart))
       }
 
       if (outputFile == "") {
@@ -153,7 +158,7 @@ object Main extends App {
 
       if (checkTime) {
         tend = System.currentTimeMillis()
-        println("Paths extraction " + (tend - tstart))
+        println("Paths extracted " + (tend - tstart))
       }
 
       if (outputFile == "") {
