@@ -30,6 +30,25 @@ package object graph {
     //  .flatMap(sppfLookup.findNonterminalsByName)
   }
 
+  def parseGraphFromSpecifiedPositions[L, N, T](parser: AbstractCPSParsers.AbstractSymbol[L, N, T, _],
+                                 graph: Input[L, N],
+                                 positions: List[Int],
+                                 nontermsOpt: Option[List[String]] = None): collection.Seq[T] = {
+    val sppfLookup = new DefaultSPPFLookup[L, N](graph)
+    val nodesCount = graph.edgesCount
+    parser.reset()
+
+    val roots = mutable.MutableList[T]()
+    for (i <- positions) {
+      parser(graph, i, sppfLookup)(t => roots += t)
+      Trampoline.run
+    }
+    roots.toList
+    //nontermsOpt
+    //  .getOrElse(List(parser.name))
+    //  .flatMap(sppfLookup.findNonterminalsByName)
+  }
+
   def edgesToInMemoryGraph(edges: List[(Int, String, Int)], nodesCount: Int): GraphxInput[String] = {
     val scalaxEdges = edges.map {
       case (f, l, t) =>

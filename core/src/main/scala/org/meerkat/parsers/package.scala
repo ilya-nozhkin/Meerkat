@@ -34,7 +34,7 @@ import org.meerkat.sppf.DefaultSPPFLookup
 import org.meerkat.sppf.SemanticAction
 import org.meerkat.sppf.TreeBuilder
 import org.meerkat.sppf.NonPackedNode
-import org.meerkat.util.converters.{EnumeratingConverter$, extractNonAmbiguousSPPFs}
+import org.meerkat.util.converters.{BFSConverter, DFSConverter, EnumeratingConverter$, extractNonAmbiguousSPPFs}
 
 import scala.collection.mutable
 
@@ -170,7 +170,7 @@ package object parsers {
   def executeQuery[L, N, T <: NonPackedNode, V](
     parser: AbstractCPSParsers.AbstractSymbol[L, N, T, V],
     input: Input[L, N]): Stream[V] =
-      extractNonAmbiguousSPPFs(getAllSPPFs(parser, input))
+      extractNonAmbiguousSPPFs(getAllSPPFs(parser, input), DFSConverter)
         .map(sppf => SemanticAction.execute(sppf)(input))
         .map{ case (x: V) => x }
 

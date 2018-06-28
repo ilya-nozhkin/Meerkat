@@ -22,8 +22,6 @@ lazy val core = (project in file("core"))
     libraryDependencies ++= Seq(
       "org.scalactic"                  %% "scalactic"    % "3.0.1",
       "org.scalatest"                  %% "scalatest"    % "3.0.1" % Test,
-      "com.google.guava"               % "guava-testlib" % "23.0",
-      "commons-io"                     % "commons-io"    % "2.4",
       "org.bitbucket.inkytonik.dsinfo" %% "dsinfo"       % "0.4.0",
       "org.scala-graph"                %% "graph-core"   % "1.12.0",
       "org.apache.jena"                % "jena-core"     % "3.4.0",
@@ -33,7 +31,7 @@ lazy val core = (project in file("core"))
     parallelExecution in Test := false
   )
 
-lazy val neo4j = (project in file("neo4j"))
+/*lazy val neo4j = (project in file("neo4j"))
   .settings(commonSettings)
   .dependsOn(core % "compile->compile;test->test")
   .settings(
@@ -47,6 +45,22 @@ lazy val neo4j = (project in file("neo4j"))
       "org.neo4j"     % "neo4j-kernel" % "3.2.6" % "test" classifier "tests",
       "org.neo4j"     % "neo4j-io"     % "3.2.6" % "test" classifier "tests"
     )
+  )*/
+
+lazy val assemblySettings = Seq(
+  assemblyJarName in assembly := "lockchecker.jar"
+)
+
+lazy val lockchecker = (project in file("lockchecker"))
+  .settings(commonSettings)
+  .settings(assemblySettings)
+  .dependsOn(core % "compile->compile;test->test")
+  .settings(
+    name := "MeerkatLockChecker",
+    libraryDependencies ++= Seq(
+      "org.scalactic" %% "scalactic"   % "3.0.1",
+      "org.scalatest" %% "scalatest"   % "3.0.1" % "test",
+    )
   )
 
 lazy val root = (project in file("."))
@@ -54,5 +68,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "MeerkatRoot"
   )
-  .aggregate(core, neo4j)
-  .dependsOn(core, neo4j)
+  .aggregate(core, lockchecker)
+  .dependsOn(core, lockchecker)
+
+mainClass in assembly := Some("org.meerkat.lockchecker.Main")

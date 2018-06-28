@@ -25,7 +25,7 @@ package object converters {
         if (nonpacked.first != null) {
           val next = if (nonpacked.isAmbiguous) sequence.next else nonpacked.first
           nonpacked.first = constructNodeFromDFSSequence(next, nonpacked, sequence).asInstanceOf[PackedNode]
-          nonpacked.rest = null;
+          nonpacked.rest = null
         }
     }
 
@@ -146,7 +146,7 @@ package object converters {
                           (implicit input: Input[_, _]): Stream[tree.Tree] =
     extractTreesFromSPPF(Seq(root))(input)
 
-  private def extractPath(root: tree.Tree, isMostLeft: Boolean): Seq[Int] = root match {
+  /*private def extractPath(root: tree.Tree, isMostLeft: Boolean): Seq[Int] = root match {
     case node @ tree.RuleNode(_, children) => extractPath(children.head, isMostLeft) ++
       children.tail.flatMap(child => extractPath(child, false))
 
@@ -160,5 +160,5 @@ package object converters {
 
     case node @ tree.TerminalNode(_, leftExtent, rightExtent) =>
       Seq(leftExtent, rightExtent)
-  }
+  }*/
 }
