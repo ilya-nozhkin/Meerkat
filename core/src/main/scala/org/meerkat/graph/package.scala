@@ -41,8 +41,8 @@ package object graph {
     val roots = mutable.MutableList[T]()
     for (i <- positions) {
       parser(graph, i, sppfLookup)(t => roots += t)
-      Trampoline.run
     }
+    Trampoline.run
     roots.toList
     //nontermsOpt
     //  .getOrElse(List(parser.name))
