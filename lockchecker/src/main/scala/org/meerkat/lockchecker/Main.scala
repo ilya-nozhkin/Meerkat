@@ -49,6 +49,17 @@ object Main extends App {
     }
   }
 
+  private def leftBracket(count: Int, left: String, body: StringNonterminal) = {
+    val list = Stream.range(0, count).map(i => (left + i) ~ body).toList
+
+    if (count == 1)
+      list.head | list.head
+    else {
+      val z = list(0) | list(1)
+      list.drop(2).foldLeft(z){case (r, a) => r | a}
+    }
+  }
+
   def generateAsserts(count: Int): AlternationBuilder[String, Nothing, NoValue] = {
     val list = Stream.range(0, count).map(i => "A" + i)
     val start = list(0) | list(1)
@@ -68,10 +79,14 @@ object Main extends App {
       brackets(calls, "C", S1, "RT", S1) |
       brackets(locks, "G", S0, "RL", S1))
 
-    lazy val S: Nonterminal[String, Nothing] = syn(
-      (ba ~ S) | (S ~ ba) | (S ~ S1) | (S1 ~ S) | ba |
-      brackets(calls, "C", S, "RT", S1) |
-      brackets(calls, "C", S, "RT", S))
+    //lazy val S: Nonterminal[String, Nothing] = syn(
+    //  S1 ~ S | ba | leftBracket(calls, "C", S))
+
+    lazy val P: Nonterminal[String, Nothing] =
+      syn(outE((p: String) => true) | outE((p: String) => true) ~ P)
+
+    lazy val S: Nonterminal[String, Nothing] =
+      syn("C58167" ~ P ~ "C58174" ~ P ~ "C58022" ~ P ~ "C58037" ~ P ~ syn("C36303" | "C36304" | "C36305") ~ P ~ "C36317" ~ P ~ "C5663" ~ P ~ "C5671" ~ P ~ "C5693" ~ P ~ "A30")
 
     S
   }
